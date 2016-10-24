@@ -7,6 +7,9 @@
 	"background": {
 		"scripts": ["block-typing.js"]
 	},
+	"browser_action": {
+		"default_title": "Facebook Timeline"
+	},
 	"permissions": [
 		"activeTab",
 		"webRequest",
