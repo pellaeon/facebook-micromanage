@@ -39,7 +39,16 @@ chrome.runtime.onMessage.addListener(
 			if (request.type == "addItem") {
 				getFriendList();
 				sendResponse({farewell: "goodbye"});
+			} else if ( request.type == "getSavedFriendList" ) {
+				chrome.storage.local.get('friendlist_ul', function(items) {
+					sendResponse(items);
+				});
+			} else if ( request.type == "clearFriendList" ) {
+				chrome.storage.local.remove('friendlist_ul', function() {
+					sendResponse(true);
+				});
 			}
+			return true;//http://stackoverflow.com/questions/27823740/chrome-extension-message-passing-between-content-and-background-not-working
 		});
 
 chrome.webRequest.onBeforeSendHeaders.addListener(
@@ -98,16 +107,22 @@ function getFriendList(cursor) {
 	getMeId();
 	var site = 'https://www.facebook.com';
 	var endpoint = '/ajax/pagelet/generic.php/AllFriendsAppCollectionPagelet';
-	console.log(builddataQS(me_id));
 	var qs = '?dpr=1&data='+builddataQS(me_id, cursor)+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
 	//getCookies();
 	r1 = new XMLHttpRequest();
 	r1.onload = function() {
 		res_obj = JSON.parse(this.responseText.substr(9));
-		console.log(res_obj);
 		chrome.runtime.sendMessage({type: "appendFriendList", payload: res_obj.payload}, function(response) {
-			if ( response.cursor )
+			if ( response.cursor ) {
 				getFriendList(parseInt(response.cursor));
+			} else if ( response.friendlist_ul ) {
+				chrome.storage.local.set({'friendlist_ul': response.friendlist_ul }, function() {
+					console.log("Done saving friendlist_ul");
+					chrome.storage.local.get('friendlist_ul', function(items) {
+						console.log(items);
+					});
+				});
+			}
 		});
 	};
 	r1.open('GET', site+endpoint+qs, true);
