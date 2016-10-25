@@ -67,7 +67,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 
 function getMeId() {
 	r1 = new XMLHttpRequest();
-	r1.onreadystatechange = function() {
+	r1.onload = function() {
 		re = /USER_ID\":\"(\d+)\"/;
 		res = re.exec(this.responseText);
 		me_id = res[1];
@@ -102,7 +102,7 @@ function getFriendList(cursor) {
 	var qs = '?dpr=1&data='+builddataQS(me_id, cursor)+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
 	//getCookies();
 	r1 = new XMLHttpRequest();
-	r1.onreadystatechange = function() {
+	r1.onload = function() {
 		res_obj = JSON.parse(this.responseText.substr(9));
 		console.log(res_obj);
 		chrome.runtime.sendMessage({type: "appendFriendList", payload: res_obj.payload}, function(response) {
