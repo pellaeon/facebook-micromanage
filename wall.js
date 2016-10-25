@@ -21,7 +21,11 @@ chrome.runtime.onMessage.addListener(
 				if ( new_cursor == current_cursor ) {
 					sendResponse({ 'stop': true });
 				} else {
-					$('ul#timeline').after(adding);
+					if ( $('ul.uiList').length ) {
+						$('ul.uiList:first').append(adding[0].children);
+					} else {
+						$('ul#timeline').after(adding);
+					}
 					sendResponse({ 'cursor': new_cursor });
 				}
 			}
