@@ -75,14 +75,16 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 );
 
 function getMeId() {
-	r1 = new XMLHttpRequest();
-	r1.onload = function() {
-		re = /USER_ID\":\"(\d+)\"/;
-		res = re.exec(this.responseText);
-		me_id = res[1];
-	};
-	r1.open('GET', 'https://www.facebook.com/me', false);
-	r1.send();
+	if ( !me_id ) {
+		r1 = new XMLHttpRequest();
+		r1.onload = function() {
+			re = /USER_ID\":\"(\d+)\"/;
+			res = re.exec(this.responseText);
+			me_id = res[1];
+		};
+		r1.open('GET', 'https://www.facebook.com/me', false);
+		r1.send();
+	}
 }
 
 function getUserWall(id) {
