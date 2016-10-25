@@ -103,6 +103,12 @@ function getFriendList(cursor) {
 	//getCookies();
 	r1 = new XMLHttpRequest();
 	r1.onreadystatechange = function() {
+		res_obj = JSON.parse(this.responseText.substr(9));
+		console.log(res_obj);
+		chrome.runtime.sendMessage({type: "appendFriendList", payload: res_obj.payload}, function(response) {
+			if ( response.cursor )
+				getFriendList(parseInt(response.cursor));
+		});
 	};
 	r1.open('GET', site+endpoint+qs, true);
 	//r1.setRequestHeader('user-agent', UA);

@@ -14,5 +14,15 @@ chrome.runtime.onMessage.addListener(
 				"from a content script:" + sender.tab.url :
 				"from the extension");
 			if (request.type == "appendFriendList") {
-	sendResponse({farewell: "goodbye"});
+				adding = $(request.payload);
+				new_cursor = adding.find('li:last-child button.FriendRequestOutgoing').attr('data-profileid');
+				console.log(new_cursor);
+				current_cursor = $('ul.uiList li:last-child button.FriendRequestOutgoing').attr('data-profileid');
+				if ( new_cursor == current_cursor ) {
+					sendResponse({ 'stop': true });
+				} else {
+					$('ul#timeline').after(adding);
+					sendResponse({ 'cursor': new_cursor });
+				}
+			}
 		});
