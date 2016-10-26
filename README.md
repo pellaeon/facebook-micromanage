@@ -13,6 +13,8 @@ Download ZIP file, decompress, follow [Google's guide to install unpacked extens
 
 ## Features
 
+Breaking the [Facebook filter bubble](https://en.wikipedia.org/wiki/Filter_bubble)
+
 - [x] Get friend list
 - [ ] Crawl all friends' walls
 - [ ] Display friends' posts in time sorted stream
