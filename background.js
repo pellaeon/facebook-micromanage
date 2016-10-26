@@ -5,7 +5,7 @@ var me_id = '';
 chrome.browserAction.onClicked.addListener(
 		function(tab) {
 		chrome.tabs.create({
-				'url': chrome.extension.getURL("wall.html")
+				'url': chrome.extension.getURL("friendlist.html")
 			}
 		);
 		}
