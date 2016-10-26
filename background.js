@@ -2,26 +2,6 @@ var COOKIES = [];
 var UA = window.navigator.userAgent;
 var me_id = '';
 
-// http://stackoverflow.com/questions/10334909/associate-a-custom-user-agent-to-a-specific-google-chrome-page-tab/10339902#10339902
-chrome.webRequest.onBeforeRequest.addListener(
-		function(info) {
-			console.log("Cat intercepted: " + info.url);
-			return { cancel: true };
-		},
-		// filters
-		{
-			urls: [
-				"https://www.facebook.com/ajax/typeahead/*",
-				"https://www.facebook.com/ufi/typing/*",
-				"https://pixel.facebook.com/ajax/chat/opentab_tracking.php*",
-				"https://www.facebook.com/ajax/messaging/typ.php*"
-			],
-			types: ["xmlhttprequest"]
-		},
-		// extraInfoSpec
-		["blocking"]
-);
-
 chrome.browserAction.onClicked.addListener(
 		function(tab) {
 		chrome.tabs.create({
@@ -51,6 +31,7 @@ chrome.runtime.onMessage.addListener(
 			return true;//http://stackoverflow.com/questions/27823740/chrome-extension-message-passing-between-content-and-background-not-working
 		});
 
+// http://stackoverflow.com/questions/10334909/associate-a-custom-user-agent-to-a-specific-google-chrome-page-tab/10339902#10339902
 chrome.webRequest.onBeforeSendHeaders.addListener(
     function(info) {
         // Replace the User-Agent header
