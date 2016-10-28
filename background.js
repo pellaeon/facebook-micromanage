@@ -1,6 +1,7 @@
 var COOKIES = [];
 var UA = window.navigator.userAgent;
 var me_id = '';
+var site = 'https://www.facebook.com';
 
 chrome.browserAction.onClicked.addListener(
 		function(tab) {
@@ -27,6 +28,9 @@ chrome.runtime.onMessage.addListener(
 				chrome.storage.local.remove('friendlist_ul', function() {
 					sendResponse(true);
 				});
+			} else if ( request.type == "getUserWall" ) {
+				getUserWall(request.id)
+				sendResponse(true);
 			}
 			return true;//http://stackoverflow.com/questions/27823740/chrome-extension-message-passing-between-content-and-background-not-working
 		});
@@ -68,10 +72,74 @@ function getMeId() {
 	}
 }
 
-function getUserWall(id) {
+function buildFriendWallDataQS(id, cursor='') {
+	data = {"profile_id":parseInt(id),
+		"start":0,
+		"end":1477983599,
+		"query_type":36,
+		"sk":"timeline",
+		"buffer":50,
+		"current_scrubber_key":"recent",
+		"page_index":1,
+		"require_click":false,
+		"section_container_id":"u_jsonp_42_g",
+		"section_pagelet_id":"pagelet_timeline_recent",
+		"unit_container_id":"u_jsonp_42_f",
+		"showing_esc":false,
+		"adjust_buffer":false,
+		"tipld":{
+			"sc":2,
+			"vc":4
+		},
+		"num_visible_units":4,
+		"remove_dupes":true
+	};
+	return JSON.stringify(data);
 }
 
-function builddataQS(me_id, cursor='') {
+function buildUrl(url, parameters){
+	var qs = "";
+	for(var key in parameters) {
+		var value = parameters[key];
+		qs += encodeURIComponent(key) + "=" + encodeURIComponent(value) + "&";
+	}
+	if (qs.length > 0){
+		qs = qs.substring(0, qs.length-1); //chop off last "&"
+		url = url + "?" + qs;
+	}
+	return url;
+}
+function getUserWall(id, callback) {
+	getMeId();
+	var endpoint = '/ajax/pagelet/generic.php/ProfileTimelineSectionPagelet';
+	var params = {
+		dpr:1,
+		ajaxpipe:1,
+		//ajaxpipe_token:AXhTS1yuV8BV9ueh,
+		no_script_path:1,
+		data: buildFriendWallDataQS(id),
+		__user:parseInt(me_id),
+		__a:1,
+		__dyn: '',
+		//__af:o,
+		//__req:jsonp_43,
+		__be:-1,
+		//__pc:PHASED%3ADEFAULT,
+		//__rev:2646857,
+		//__srp_t:1477551480,
+		//__adt:43
+	};
+	var qs = buildUrl('',params);
+	r1 = new XMLHttpRequest();
+	r1.onload = function() {
+		chrome.runtime.sendMessage({type: "appendUserWall", id: id, html: this.responseText}, function(response) {
+		});
+	};
+	r1.open('GET', site+endpoint+qs, true);
+	r1.send();
+}
+
+function buildFriendListDataQS(me_id, cursor='') {
 	data = {
 		'collection_token': me_id+':2356318349:2',//magic number
 		'cursor': btoa('0:not_structured:'+cursor),
@@ -88,9 +156,8 @@ function builddataQS(me_id, cursor='') {
 }
 function getFriendList(cursor) {
 	getMeId();
-	var site = 'https://www.facebook.com';
 	var endpoint = '/ajax/pagelet/generic.php/AllFriendsAppCollectionPagelet';
-	var qs = '?dpr=1&data='+builddataQS(me_id, cursor)+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
+	var qs = '?dpr=1&data='+buildFriendListDataQS(me_id, cursor)+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
 	//getCookies();
 	r1 = new XMLHttpRequest();
 	r1.onload = function() {

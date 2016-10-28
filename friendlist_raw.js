@@ -6,11 +6,10 @@ $(document).ready(function() {
 			ids = ul.children('li').each(function() {
 				id = $(this).find('button.FriendRequestOutgoing').attr('data-profileid');
 				name = $(this).find('div.fsl.fwb.fcb > a').text();
-				console.log($(this));
 				if ( id == undefined ) {
 					console.log($(this));
 				}
-				$('ul#friend_ids').append('<li>'+id+' '+name+'</li>');
+				$('ul#friend_ids').append('<li><a href="wall.html?id='+id+'">'+id+' '+name+'</a></li>');
 			});
 			$('h2#count').text(ul.children('li').length+' friends');
 			console.log(ids);
