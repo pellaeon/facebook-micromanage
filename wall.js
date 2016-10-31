@@ -13,8 +13,8 @@ function getParameterByName(name, url) {
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-function getUserWall(id) {
-	chrome.runtime.sendMessage({type: "getUserWall", id: id}, function(response) {
+function getUserWall(id, page) {
+	chrome.runtime.sendMessage({type: "getUserWall", id: id, page: page}, function(response) {
 	});
 }
 
@@ -36,8 +36,10 @@ chrome.runtime.onMessage.addListener(
 							return false;
 						}
 					});
-					adding = $(content.payload.content.pagelet_timeline_recent_segment_1_0_story);
+					adding = $(content.payload.content[Object.keys(content.payload.content)[0]]);
+					console.log(content);
 					console.log(adding);
+					console.log('Appended '+adding[0].children.length+' posts');
 					$('h2#name').after(adding)
 				}
 				sendResponse(true);
@@ -47,8 +49,9 @@ chrome.runtime.onMessage.addListener(
 
 $(document).ready(function() {
 	id = getParameterByName('id');
+	page = getParameterByName('page');
 	if ( id ) {
-		getUserWall(id);
+		getUserWall(id, page);
 	} else {
 	}
 

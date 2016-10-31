@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(
 					sendResponse(true);
 				});
 			} else if ( request.type == "getUserWall" ) {
-				getUserWall(request.id)
+				getUserWall(request.id, request.page)
 				sendResponse(true);
 			}
 			return true;//http://stackoverflow.com/questions/27823740/chrome-extension-message-passing-between-content-and-background-not-working
@@ -72,7 +72,7 @@ function getMeId() {
 	}
 }
 
-function buildFriendWallDataQS(id, cursor='') {
+function buildFriendWallDataQS(id, page=1) {
 	data = {"profile_id":parseInt(id),
 		"start":0,
 		"end":1477983599,
@@ -80,7 +80,7 @@ function buildFriendWallDataQS(id, cursor='') {
 		"sk":"timeline",
 		"buffer":50,
 		"current_scrubber_key":"recent",
-		"page_index":1,
+		"page_index":parseInt(page),
 		"require_click":false,
 		"section_container_id":"u_jsonp_42_g",
 		"section_pagelet_id":"pagelet_timeline_recent",
@@ -88,10 +88,10 @@ function buildFriendWallDataQS(id, cursor='') {
 		"showing_esc":false,
 		"adjust_buffer":false,
 		"tipld":{
-			"sc":2,
-			"vc":4
+			"sc":3*parseInt(page),// magic number, not accurate, needs tweaking
+			"vc":6*parseInt(page)
 		},
-		"num_visible_units":4,
+		"num_visible_units":6*parseInt(page),
 		"remove_dupes":true
 	};
 	return JSON.stringify(data);
@@ -109,7 +109,7 @@ function buildUrl(url, parameters){
 	}
 	return url;
 }
-function getUserWall(id, callback) {
+function getUserWall(id, page) {
 	getMeId();
 	var endpoint = '/ajax/pagelet/generic.php/ProfileTimelineSectionPagelet';
 	var params = {
@@ -117,7 +117,7 @@ function getUserWall(id, callback) {
 		ajaxpipe:1,
 		//ajaxpipe_token:AXhTS1yuV8BV9ueh,
 		no_script_path:1,
-		data: buildFriendWallDataQS(id),
+		data: buildFriendWallDataQS(id, page),
 		__user:parseInt(me_id),
 		__a:1,
 		__dyn: '',
