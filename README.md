@@ -22,6 +22,8 @@ Breaking the [Facebook filter bubble](https://en.wikipedia.org/wiki/Filter_bubbl
 - [ ] Crawl liked pages and following people's walls
 - [ ] Display stream
 
+- [x] Get list of your liked pages
+
 ## Block type tracking
 
 Similar project started by the author, [facebook-not-typing](https://github.com/pellaeon/facebook-not-typing) blocks facebook from knowing you're typing a comment or message.

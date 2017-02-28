@@ -14,11 +14,12 @@ chrome.runtime.onMessage.addListener(
 				if ( !request.payload ) {
 					// Done
 					$('button#startcrawl').html('Done crawl, saving...');
+					console.log("Crawling likes done");
 					sendResponse({ 'stop': true }); 
 				} else {
 					adding = $(request.payload);
 					console.log(adding);
-					new_cursor = adding.find('li:last-child button.FriendRequestOutgoing').attr('data-profileid');
+					new_cursor = adding.find('li:last-child button.PageLikedButton').attr('data-profileid');
 					console.log(new_cursor);
 					if ( $('ul.uiList').length ) {
 						$('ul.uiList:first').append(adding[0].children);
@@ -28,8 +29,6 @@ chrome.runtime.onMessage.addListener(
 					sendResponse({ 'cursor': new_cursor });
 				}
 			} else if ( request.type == "saveFriendListDone" ) {
-				$('button#startcrawl').html('Done crawl, saving done');
-			} else if ( request.type == "lookForCursor" ) {
 				$('button#startcrawl').html('Done crawl, saving done');
 			}
 			return true;
