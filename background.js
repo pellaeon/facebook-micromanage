@@ -142,7 +142,7 @@ function getUserWall(id, page) {
 	r1.send();
 }
 
-function buildFriendListDataQS(me_id, app_id='', magic1='', cursor='', tab_key) {
+function buildDataQS(me_id, app_id='', magic1='', cursor='', tab_key) {
 	data = {
 		'collection_token': me_id+':'+app_id+':'+magic1,//magic number
 		'cursor': btoa('0:not_structured:'+cursor),
@@ -161,7 +161,7 @@ function buildFriendListDataQS(me_id, app_id='', magic1='', cursor='', tab_key) 
 function getFriendList(cursor) {
 	getMeId();
 	var endpoint = '/ajax/pagelet/generic.php/AllFriendsAppCollectionPagelet';
-	var qs = '?dpr=1&data='+buildFriendListDataQS(me_id, '2356318349', '2', cursor, 'friends')+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
+	var qs = '?dpr=1&data='+buildDataQS(me_id, '2356318349', '2', cursor, 'friends')+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
 	//getCookies();
 	r1 = new XMLHttpRequest();
 	r1.onload = function() {
@@ -192,28 +192,24 @@ function getInitialLikes() {
 
 	// First <ul> is contained in this response
 	raw_el = $(r1.responseText);
-	console.log(raw_el);
 	likes_ul_str = raw_el.find('code#u_0_4g')[0].innerHTML.slice(5, -4);
 	likes_ul = $(likes_ul_str);
 	chrome.runtime.sendMessage({type: "appendLikesList", payload: likes_ul[0].outerHTML}, function(response) {
-		console.log(response);
-			if ( response.cursor ) {
-				getLikes(response.cursor);
-			}
+		if ( response.cursor ) {
+			getLikes(response.cursor);
+		}
 	});
 }
 
 function getLikes(cursor) {
 	getMeId();
 	var endpoint = '/ajax/pagelet/generic.php/LikesWithFollowCollectionPagelet';
-	var qs = '?dpr=1&data='+buildFriendListDataQS(me_id, '2409997254', '96', cursor, "likes")+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
+	var qs = '?dpr=1&data='+buildDataQS(me_id, '2409997254', '96', cursor, "likes")+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
 	//getCookies();
 	r1 = new XMLHttpRequest();
 	r1.onload = function() {
 		res_obj = JSON.parse(this.responseText.substr(9));
-		console.log(res_obj);
 		chrome.runtime.sendMessage({type: "appendLikesList", payload: res_obj.payload}, function(response) {
-			console.log(response);
 			if ( response.cursor ) {
 				getLikes(response.cursor);
 			} else if ( response.stop ) {
