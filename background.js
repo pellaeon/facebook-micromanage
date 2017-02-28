@@ -29,7 +29,10 @@ chrome.runtime.onMessage.addListener(
 					sendResponse(true);
 				});
 			} else if ( request.type == "getUserWall" ) {
-				getUserWall(request.id, request.page)
+				getUserWall(request.id, request.page);
+				sendResponse(true);
+			} else if ( request.type == "getLikes" ) {
+				getLikes();
 				sendResponse(true);
 			}
 			return true;//http://stackoverflow.com/questions/27823740/chrome-extension-message-passing-between-content-and-background-not-working
@@ -139,17 +142,19 @@ function getUserWall(id, page) {
 	r1.send();
 }
 
-function buildFriendListDataQS(me_id, cursor='') {
+function buildFriendListDataQS(me_id, app_id='', magic1='', cursor='', tab_key) {
 	data = {
-		'collection_token': me_id+':2356318349:2',//magic number
-		'cursor': btoa('0:not_structured:'+cursor),
-		"tab_key":"friends",
+		'collection_token': me_id+':'+app_id+':'+magic1,//magic number
+		//'cursor': btoa('0:not_structured:'+cursor),
+		'cursor': cursor,
+		"tab_key": tab_key,
 		'profile_id': parseInt(me_id),//parseInt is significant
 		//"q":"",//not required
 		"overview":false,
+		//lst?
 		"ftid":null,
 		"order":null,
-		"sk":"friends",
+		"sk":tab_key,
 		"importer_state":null
 	};
 	return encodeURIComponent(JSON.stringify(data));
@@ -157,7 +162,7 @@ function buildFriendListDataQS(me_id, cursor='') {
 function getFriendList(cursor) {
 	getMeId();
 	var endpoint = '/ajax/pagelet/generic.php/AllFriendsAppCollectionPagelet';
-	var qs = '?dpr=1&data='+buildFriendListDataQS(me_id, cursor)+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
+	var qs = '?dpr=1&data='+buildFriendListDataQS(me_id, '2356318349', '2', btoa('0:not_structured:'+cursor), 'friends')+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
 	//getCookies();
 	r1 = new XMLHttpRequest();
 	r1.onload = function() {
@@ -173,6 +178,91 @@ function getFriendList(cursor) {
 					});
 				});
 			}
+		});
+	};
+	r1.open('GET', site+endpoint+qs, true);
+	//r1.setRequestHeader('user-agent', UA);
+	r1.send();
+
+}
+
+function getInitialLikeCursor() {
+	r1 = new XMLHttpRequest();
+	r1.open('GET', 'https://www.facebook.com/me/likes', false);
+	r1.send();
+
+	// First <ul> is contained in this response
+	raw_el = $(r1.responseText);
+	console.log(raw_el);
+	likes_ul_str = raw_el.find('code#u_0_4g')[0].innerHTML.slice(5, -4);
+	likes_ul = $(likes_ul_str);
+	console.log(likes_ul);
+	chrome.runtime.sendMessage({type: "appendLikesList", payload: likes_ul[0].outerHTML}, function(response) {
+		console.log(response);
+	});
+
+	/*
+	   Look for the following structure in response:
+
+	   ["TimelineAppCollection", "enableContentLoader", ["__elem_559218ec_0_0"],
+	   ["pagelet_timeline_app_collection_<userid>:2409997254:96", {
+	   __m: "__elem_559218ec_0_0"
+	   }, "<base64 string, this is cursor>"],
+	   []
+	   ],
+	   */
+	start_bracket_index = r1.responseText.search('enableContentLoader');
+	do {
+		start_bracket_index--;
+	} while ( r1.responseText[start_bracket_index] != '[' );
+	console.log(start_bracket_index);
+
+	function bracket_matching(s, i) {
+		var v=0;
+		while ( i<s.length ) {
+			if ( s[i] == '[' ) {
+				v++;
+			} else if ( s[i] == ']' ) {
+				v--;
+				if ( v == 0 ) {
+					break;
+				}
+			}
+			i++;
+		}
+		return i;
+	}
+
+	closing_bracket_index = bracket_matching(r1.responseText, start_bracket_index);
+	structure = eval(r1.responseText.substring(start_bracket_index, closing_bracket_index+1));
+	console.log(structure);
+	return structure[3][2];
+}
+
+function getLikes(cursor) {
+	getMeId();
+	console.log('getlike');
+	cursor = getInitialLikeCursor();
+	var endpoint = '/ajax/pagelet/generic.php/LikesWithFollowCollectionPagelet';
+	var qs = '?dpr=1&data='+buildFriendListDataQS(me_id, '2409997254', '96', cursor, "likes")+'&__user='+me_id+'&__a=1&__dyn=';//__a=1 is significant
+	//getCookies();
+	r1 = new XMLHttpRequest();
+	r1.onload = function() {
+		res_obj = JSON.parse(this.responseText.substr(9));
+		console.log(res_obj);
+		chrome.runtime.sendMessage({type: "appendLikesList", payload: res_obj.payload}, function(response) {
+			console.log(response);
+			/*
+			if ( response.cursor ) {
+				getLikes(parseInt(response.cursor));
+			} else if ( response.friendlist_ul ) {
+				chrome.storage.local.set({'friendlist_ul': response.friendlist_ul }, function() {
+					console.log("Done saving friendlist_ul");
+					chrome.storage.local.get('friendlist_ul', function(items) {
+						console.log(items);
+					});
+				});
+			}*/
 		});
 	};
 	r1.open('GET', site+endpoint+qs, true);
