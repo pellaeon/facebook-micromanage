@@ -1,3 +1,9 @@
+/* Fan pages */
 div[data-testid="chat_sidebar"] > div:first-child {
+	display: none;
+}
+
+/* 「聯絡人」、「群組」 etc */
+div[data-testid="chat_sidebar"] > div > div._55ob {
 	display: none;
 }
