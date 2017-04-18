@@ -1,0 +1,3 @@
+div[data-testid="chat_sidebar"] > div:first-child {
+	display: none;
+}

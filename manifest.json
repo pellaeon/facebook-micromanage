@@ -7,6 +7,13 @@
 	"background": {
 		"scripts": ["jquery-3.1.1.min.js", "background.js"]
 	},
+	"content_scripts": [
+	{
+		"matches": ["https://www.facebook.com/*"],
+		"css": ["content.css"],
+		"js": ["jquery-3.1.1.min.js"]
+	}
+	],
 	"browser_action": {
 		"default_title": "Facebook Micromanage"
 	},
