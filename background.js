@@ -192,7 +192,9 @@ function getInitialLikes() {
 
 	// First <ul> is contained in this response
 	raw_el = $(r1.responseText);
-	likes_ul_str = raw_el.find('code#u_0_4g')[0].innerHTML.slice(5, -4);
+	// the code elem's id might not be u_0_4l, but search for something like this in raw_el:
+	// <div class="hidden_elem"><code id="u_0_4l"><!-- <ul class="uiList _153e _5k35 _620 _509- _4ki"><li class="_5rz _5k3a _5rz3 _153f"><div class="_3owb">
+	likes_ul_str = raw_el.find('code#u_0_4l')[0].innerHTML.slice(5, -4);
 	likes_ul = $(likes_ul_str);
 	chrome.runtime.sendMessage({type: "appendLikesList", payload: likes_ul[0].outerHTML}, function(response) {
 		if ( response.cursor ) {
