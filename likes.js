@@ -13,7 +13,8 @@ chrome.runtime.onMessage.addListener(
 			if (request.type == "appendLikesList") {
 				if ( !request.payload ) {
 					// Done
-					$('button#startcrawl').html('Done crawl, saving...');
+					$('button#startcrawl').html('Done crawl');
+					$('h1').text('Likes ('+$('li').length+')');
 					console.log("Crawling likes done");
 					sendResponse({ 'stop': true }); 
 				} else {
