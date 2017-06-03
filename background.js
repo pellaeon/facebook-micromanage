@@ -75,12 +75,13 @@ function getMeId() {
 	}
 }
 
-function buildFriendWallDataQS(id, page=1) {
+function buildFriendWallDataQS(id, page) {
 	data = {"profile_id":parseInt(id),
 		"start":0,
 		"end":1477983599,
 		"query_type":36,
 		"sk":"timeline",
+		"lst":me_id+':'+id+':'+String(Math.round(Date.now()/1000)),
 		"buffer":50,
 		"current_scrubber_key":"recent",
 		"page_index":parseInt(page),
@@ -120,7 +121,7 @@ function getUserWall(id, page) {
 		ajaxpipe:1,
 		//ajaxpipe_token:AXhTS1yuV8BV9ueh,
 		no_script_path:1,
-		data: buildFriendWallDataQS(id, page),
+		data: buildFriendWallDataQS(id, page?page:1),
 		__user:parseInt(me_id),
 		__a:1,
 		__dyn: '',
