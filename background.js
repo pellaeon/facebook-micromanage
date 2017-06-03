@@ -83,6 +83,21 @@ function buildFriendWallDataQS(id, page) {
 		"start":0,
 		"end":1477983599,
 		"query_type":36,
+		/* there are 2 query types: recent (type 36) and after_timestamp (type 8),
+		 * this one you see is type 36.
+		 *
+		 * type 8:
+		 * {"profile_id":,
+			"start":1483257600,
+			"end":1514793599,
+			"query_type":8,
+			"sk":"timeline",
+			"filter_after_timestamp":1491114166,
+			"lst":"<censored>",
+			"section_pagelet_id":"pagelet_timeline_year_current",
+			"parent_key":null,
+			"force_no_friend_activity":false}
+		*/
 		"sk":"timeline",
 		"lst":me_id+':'+id+':'+String(Math.round(Date.now()/1000)),
 		"buffer":50,
