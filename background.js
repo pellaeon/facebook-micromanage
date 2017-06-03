@@ -34,6 +34,9 @@ chrome.runtime.onMessage.addListener(
 			} else if ( request.type == "getLikes" ) {
 				getInitialLikes();
 				sendResponse(true);
+			} else if ( request.type == "getTicks" ) {
+				getInitialTicks();
+				sendResponse(true);
 			}
 			return true;//http://stackoverflow.com/questions/27823740/chrome-extension-message-passing-between-content-and-background-not-working
 		});
@@ -230,5 +233,68 @@ function getLikes(cursor) {
 	r1.open('GET', site+endpoint+qs, true);
 	//r1.setRequestHeader('user-agent', UA);
 	r1.send();
+}
 
+function getInitialTicks() {
+	r1 = new XMLHttpRequest();
+	r1.open('GET', 'https://www.facebook.com/', false);
+	r1.send();
+
+	raw_el = $(r1.responseText);
+	ticks_ul_str = raw_el.find('code#u_0_2m')[0].innerHTML.slice(5, -4);
+	ticks_ul = $(ticks_ul_str);
+
+	oldest = r1.responseText.match(/oldest=(\d+)/);
+	chrome.runtime.sendMessage({type: "appendTicksList", payload: ticks_ul[0].innerHTML}, function(response) {
+	});
+	getTicks(oldest[1]);
+}
+
+function urlencodeFormData(fd){
+    var s = '';
+    function encode(s){ return encodeURIComponent(s).replace(/%20/g,'+'); }
+    for(var pair of fd.entries()){
+        if(typeof pair[1]=='string'){
+            s += (s?'&':'') + encode(pair[0])+'='+encode(pair[1]);
+        }
+    }
+    return s;
+}
+
+function getTicks(oldest) {
+	getMeId();
+	var endpoint = '/ajax/ticker_entstory.php';
+	var qs = '?source=fst_sidebar&oldest='+oldest+'&dpr=1';
+	//getCookies();
+	r1 = new XMLHttpRequest();
+	r1.onload = function() {
+		console.log(this.responseText);
+		//res_obj = JSON.parse(this.responseText.substr(9));
+		/*
+		chrome.runtime.sendMessage({type: "appendLikesList", payload: res_obj.payload}, function(response) {
+			if ( response.cursor ) {
+				getLikes(response.cursor);
+			} else if ( response.stop ) {
+				return;
+			}
+		});*/
+	};
+	r1.open('POST', site+endpoint+qs, true);
+	r1.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+	fd = new FormData();
+	fd.append('__user', me_id);
+	fd.append('__a', '1');
+	fd.append('__dyn', '');
+	fd.append('__af', 'iw');
+	fd.append('__req', '10');
+	fd.append('__be', '-1');
+	fd.append('__pc', 'EXP4:DEFAULT');
+	fd.append('__rev','3017141');
+	fd.append('__spin_r', '3017141');
+	fd.append('__spin_b', 'trunk');
+	//fd.append('__spin_t', '1494594558');
+	fd.append('ft[tn]', '+G');
+	fd.append('fb_dtsg', '');
+	fd.append('logging', '');
+	r1.send(urlencodeFormData(fd));
 }
