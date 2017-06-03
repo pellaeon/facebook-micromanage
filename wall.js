@@ -1,4 +1,5 @@
 var id = 0;
+var page = 1;
 var html;
 
 function getParameterByName(name, url) {
@@ -40,7 +41,12 @@ chrome.runtime.onMessage.addListener(
 					console.log(content);
 					console.log(adding);
 					console.log('Appended '+adding[0].children.length+' posts');
-					$('h2#name').after(adding)
+					if ( adding[0].children.length == 0 ) {
+						$('div#stream').after('<h2 style="color: red">Can\'t load more, know issue. debug: page= '+page+'</h2>');
+						window.onscroll = null;
+					} else {
+						$('div#stream').append(adding)
+					}
 				}
 				sendResponse(true);
 			}
@@ -49,10 +55,16 @@ chrome.runtime.onMessage.addListener(
 
 $(document).ready(function() {
 	id = getParameterByName('id');
-	page = getParameterByName('page');
+	page = parseInt(getParameterByName('page'));
 	if ( id ) {
 		getUserWall(id, page);
 	} else {
 	}
-
 });
+
+window.onscroll = function(ev) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+		page+=1;
+		getUserWall(id, page);
+    }
+};
