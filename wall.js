@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener(
 
 $(document).ready(function() {
 	id = getParameterByName('id');
-	page = parseInt(getParameterByName('page'));
+	page = parseInt(getParameterByName('page')) || 1;
 	if ( id ) {
 		getUserWall(id, page);
 	} else {
