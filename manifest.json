@@ -5,7 +5,7 @@
 	"version": "1.0",
 
 	"background": {
-		"scripts": ["jquery-3.1.1.min.js", "background.js"]
+		"scripts": ["jquery-3.1.1.min.js", "vendor/zangodb.min.js", "background.js", "lib/storage.js"]
 	},
 	"content_scripts": [
 	{
@@ -23,6 +23,7 @@
 		"webRequestBlocking",
 		"storage",
 		"unlimitedStorage",
+		"alarms",
 		"https://www.facebook.com/*"
 	],
 	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"

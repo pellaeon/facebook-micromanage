@@ -65,6 +65,10 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     ["blocking", "requestHeaders"]
 );
 
+chrome.alarms.create('wallcrawl', { 'periodInMinutes': 5 });
+chrome.alarms.onAlarm.addListener(function () {
+});
+
 function getMeId() {
 	if ( !me_id ) {
 		r1 = new XMLHttpRequest();
@@ -189,6 +193,21 @@ function getFriendList(cursor) {
 			if ( response.cursor ) {
 				getFriendList(parseInt(response.cursor));
 			} else if ( response.friendlist_ul ) {
+				var friendlist_ul_el = $(response.friendlist_ul);
+				friendlist_ul_el.children().each(function ( index ) {
+					try {
+						var fbuid = $(this).find('[data-profileid]')[0].getAttribute('data-profileid');
+						var name =  $(this).find('a[data-hovercard]')[1].text;// the [0] found is profile pic
+					} catch (e) {
+						console.log('Unable to get friend data, probably his/her account is disabled');
+						console.log($(this));
+					}
+					Person.insert({
+						fbuid: fbuid,
+						name: name,
+						lastcrawl: Date.now()
+					}).catch(error => console.error(error));
+				});
 				chrome.storage.local.set({'friendlist_ul': response.friendlist_ul }, function() {
 					console.log("Done saving friendlist_ul");
 					chrome.storage.local.get('friendlist_ul', function(items) {
