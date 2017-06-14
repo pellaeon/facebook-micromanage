@@ -5,7 +5,7 @@
 	"version": "1.0",
 
 	"background": {
-		"scripts": ["jquery-3.1.1.min.js", "vendor/dexie.js", "background.js", "lib/storage.js"]
+		"scripts": ["jquery-3.1.1.min.js", "vendor/dexie.js", "lib/utils.js", "lib/personWall.js", "background.js", "lib/storage.js"]
 	},
 	"content_scripts": [
 	{
