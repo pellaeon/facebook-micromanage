@@ -65,8 +65,11 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     ["blocking", "requestHeaders"]
 );
 
-chrome.alarms.create('wallcrawl', { 'periodInMinutes': 5 });
+chrome.alarms.create('wallcrawl', { 'periodInMinutes': 1 });
 chrome.alarms.onAlarm.addListener(function () {
+	Db.person.where('lastcrawl').below(Date.now()-30*60*1000).each(function(p){
+		console.log('person '+p.name);
+	});
 });
 
 function getMeId() {
@@ -204,7 +207,8 @@ function getFriendList(cursor) {
 					}
 					Db.person.put({
 						fbuid: fbuid,
-						name: name
+						name: name,
+						lastcrawl: 0
 					}).catch(error => console.error(error));
 				});
 				chrome.storage.local.set({'friendlist_ul': response.friendlist_ul }, function() {
