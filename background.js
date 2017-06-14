@@ -202,10 +202,9 @@ function getFriendList(cursor) {
 						console.log('Unable to get friend data, probably his/her account is disabled');
 						console.log($(this));
 					}
-					Person.insert({
+					Db.person.put({
 						fbuid: fbuid,
-						name: name,
-						lastcrawl: Date.now()
+						name: name
 					}).catch(error => console.error(error));
 				});
 				chrome.storage.local.set({'friendlist_ul': response.friendlist_ul }, function() {
