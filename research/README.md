@@ -11,7 +11,9 @@
 3. Install Graphviz for Python
 
     virtualenv venv
+	
 	. venv/bin/activate
+	
 	pip install graphviz
 
 4. Parse, it will generate graph using the Graphviz library.
