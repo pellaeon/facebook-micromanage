@@ -2,6 +2,7 @@ var COOKIES = [];
 var UA = window.navigator.userAgent;
 var me_id = '';
 var site = 'https://www.facebook.com';
+var msite = 'https://m.facebook.com';
 
 chrome.browserAction.onClicked.addListener(
 		function(tab) {
@@ -29,7 +30,9 @@ chrome.runtime.onMessage.addListener(
 					sendResponse(true);
 				});
 			} else if ( request.type == "getUserWall" ) {
-				getUserWall(request.id, request.page);
+				getUserWall(request.id, request.page).then(function(page, posts, count) {
+					console.log(page, posts, count);
+				});
 				sendResponse(true);
 			} else if ( request.type == "getLikes" ) {
 				getInitialLikes();
