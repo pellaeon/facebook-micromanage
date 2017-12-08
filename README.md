@@ -24,6 +24,12 @@ Breaking the [Facebook filter bubble](https://en.wikipedia.org/wiki/Filter_bubbl
 
 - [x] Get list of your liked pages
 
+## Appearance modifications
+
+- Hides section headers in chat sidebar, "Contacts", "Groups", etc.
+- A share block will pop up on hover of "Share" button beneath posts, very annoying when you are scrolling through the feed, it is disabled.
+- Hides your fan pages in chat sidebar
+
 ## Block type tracking
 
 Similar project started by the author, [facebook-not-typing](https://github.com/pellaeon/facebook-not-typing) blocks facebook from knowing you're typing a comment or message.

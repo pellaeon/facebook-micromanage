@@ -3,7 +3,11 @@ div[data-testid="chat_sidebar"] > div:first-child {
 	display: none;
 }
 
-/* 「聯絡人」、「群組」 etc */
+/* chat sidebar section headers, 「聯絡人」、「群組」 etc */
 div[data-testid="chat_sidebar"] > div > div._55ob {
+	display: none;
+}
+
+.uiContextualLayerBelowLeft[role="dialog"] {
 	display: none;
 }
