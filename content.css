@@ -8,6 +8,7 @@ div[data-testid="chat_sidebar"] > div > div._55ob {
 	display: none;
 }
 
-.uiContextualLayerBelowLeft[role="dialog"] {
+.uiContextualLayerBelowLeft[role="dialog"],
+.uiContextualLayerBelowRight[role="dialog"] {
 	display: none;
 }
