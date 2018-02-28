@@ -12,3 +12,7 @@ div[data-testid="chat_sidebar"] > div > div._55ob {
 .uiContextualLayerBelowRight[role="dialog"] {
 	display: none;
 }
+
+div[data-testid="UFIReactionsMenu"] {
+	display: none;
+}
